@@ -3,6 +3,9 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
+    testImplementation("io.github.astrapi69:silly-collection:$sillyCollectionVersion")
+    testImplementation("io.github.astrapi69:silly-bean:$sillyBeanVersion")
     testImplementation("io.github.astrapi69:swing-components:$swingComponentsVersion")
     testImplementation("org.swinglabs.swingx:swingx-all:$swingxAllVersion")
     testImplementation("io.github.astrapi69:swing-base-components:$swingBaseComponentsVersion")

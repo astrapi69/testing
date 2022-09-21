@@ -4,31 +4,34 @@
  */
 package io.github.astrapi69.testing;
 
+import java.awt.event.ActionEvent;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 
-import io.github.astrapi69.swing.document.NumberValuesDocument;
-
+import lombok.Getter;
+import io.github.astrapi69.collection.array.ArrayFactory;
 import io.github.astrapi69.model.BaseModel;
 import io.github.astrapi69.model.api.IModel;
 import io.github.astrapi69.swing.base.BasePanel;
-import lombok.Getter;
+import io.github.astrapi69.swing.combobox.model.GenericComboBoxModel;
+import io.github.astrapi69.swing.component.JMComboBox;
+import io.github.astrapi69.swing.component.JMTextField;
+import io.github.astrapi69.swing.document.NumberValuesDocument;
 
 @Getter
 public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 {
-    private JComboBox<Integer> cmbVariableX;
-    private JComboBox<Integer> cmbVariableY;
+    private JMComboBox<GenericComboBoxModel<Integer>> cmbVariableX;
+    private JMComboBox<GenericComboBoxModel<Integer>> cmbVariableY;
     private JLabel lblIntervalOfSeconds;
     private JLabel lblSettings;
     private JLabel lblVariableX;
     private JLabel lblVariableY;
-    private JTextField txtIntervalOfSeconds;
+    private JMTextField txtIntervalOfSeconds;
 
-	public MouseMoveSettingsPanel()
+    public MouseMoveSettingsPanel()
     {
         this(BaseModel.of(SettingsModelBean.builder().build()));
     }
@@ -45,11 +48,14 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
         lblSettings = new JLabel();
         lblVariableY = new JLabel();
         lblIntervalOfSeconds = new JLabel();
-        cmbVariableX = new JComboBox<>();
-        cmbVariableY = new JComboBox<>();
-        txtIntervalOfSeconds = new JTextField();
+        Integer[] cmbArray = ArrayFactory.newArray(1, 2, 3, 4);
+        cmbVariableX = new JMComboBox<>(
+                new GenericComboBoxModel<>(ArrayFactory.newArray(1, 2, 3, 4)));
+        cmbVariableY = new JMComboBox<>(
+                new GenericComboBoxModel<>(ArrayFactory.newArray(1, 2, 3, 4)));
+        txtIntervalOfSeconds = new JMTextField();
+        SettingsModelBean modelObject = getModelObject();
         txtIntervalOfSeconds.setDocument(new NumberValuesDocument());
-
 
         lblVariableX.setText("Move mouse on X axis in pixel");
 
@@ -63,12 +69,34 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
                 new Integer[] { 1, 2, 3, 4 }));
         cmbVariableX.setName("cmbVariableX");
 
-        cmbVariableY.setModel(new DefaultComboBoxModel<>(
-                new Integer[] { 1, 2, 3, 4 }));
+        cmbVariableX.addActionListener(this::onChangeCmbVariableX);
         cmbVariableY.setName("cmbVariableY");
+        cmbVariableY.addActionListener(this::onChangeCmbVariableY);
 
         txtIntervalOfSeconds.setText("60");
         txtIntervalOfSeconds.setName("txtIntervalOfSeconds");
+        txtIntervalOfSeconds.addActionListener(this::onChangeTxtIntervalOfSeconds);
+    }
+
+    protected void onChangeCmbVariableY(final ActionEvent actionEvent)
+    {
+        JMComboBox<GenericComboBoxModel<Integer>> source = (JMComboBox<GenericComboBoxModel<Integer>>)actionEvent
+                .getSource();
+        getModelObject().setYAxis(source.getPropertyModel().getObject().getSelectedItem());
+    }
+
+    protected void onChangeCmbVariableX(final ActionEvent actionEvent)
+    {
+        JMComboBox<GenericComboBoxModel<Integer>> source = (JMComboBox<GenericComboBoxModel<Integer>>)actionEvent
+                .getSource();
+        getModelObject().setXAxis(source.getPropertyModel().getObject().getSelectedItem());
+    }
+
+    protected void onChangeTxtIntervalOfSeconds(final ActionEvent actionEvent)
+    {
+        JMTextField source = (JMTextField)actionEvent.getSource();
+        IModel<String> propertyModel = source.getPropertyModel();
+        getModelObject().setIntervalOfSeconds(Integer.valueOf(propertyModel.getObject()));
     }
 
     @Override

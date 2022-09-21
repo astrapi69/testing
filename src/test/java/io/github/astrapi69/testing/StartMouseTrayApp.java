@@ -44,10 +44,11 @@ public class StartMouseTrayApp {
 	 */
 	public static void main(final String[] args)
 	{
-		final Frame frame = new Frame("MouseTrayApp");
+		final JFrame frame = new JFrame("MouseTrayApp");
 		initializeComponents();
+		frame.setExtendedState(JFrame.ICONIFIED);
 		frame.pack();
-		frame.setVisible(false);
+		frame.setVisible(true);
 	}
 	static SystemTray newSystemTray(final TrayIcon trayIcon, final PopupMenu popup) throws AWTException {
 		final SystemTray systemTray = SystemTray.getSystemTray();
