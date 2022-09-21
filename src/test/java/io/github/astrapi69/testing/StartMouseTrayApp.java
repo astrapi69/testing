@@ -1,10 +1,18 @@
 package io.github.astrapi69.testing;
 
+import io.github.astrapi69.icon.ImageIconFactory;
 import io.github.astrapi69.swing.robot.MouseExtensions;
 import io.github.astrapi69.swing.robot.RobotExtensions;
 
 import javax.swing.ImageIcon;
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.Robot;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -53,8 +61,10 @@ public class StartMouseTrayApp {
 			System.out.println("SystemTray is not supported");
 		} else {
 			final PopupMenu popup = new PopupMenu();
-			final TrayIcon trayIcon =
-					new TrayIcon(createImage("io/github/astrapi69/silk/icons/anchor.png", "Keep moving"));
+			ImageIcon trayImageIcon = ImageIconFactory
+					.newImageIcon("io/github/astrapi69/silk/icons/anchor.png", "Keep moving");
+			Image image = trayImageIcon.getImage();
+			final TrayIcon trayIcon = new TrayIcon(image);
 			final SystemTray tray = SystemTray.getSystemTray();
 
 			// Create a pop-up menu components
@@ -117,8 +127,6 @@ public class StartMouseTrayApp {
 					startItem.setEnabled(false);
 				}
 			});
-
-
 			//Add components to pop-up menu
 			popup.add(aboutItem);
 			popup.addSeparator();

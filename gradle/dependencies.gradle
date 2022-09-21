@@ -1,8 +1,8 @@
 
 dependencies {
-
-    implementation("io.github.astrapi69:swing-components:$swingComponentsVersion")
-
+    testImplementation("io.github.astrapi69:icon-img-extensions:$iconImgExtensionsVersion")
+    testImplementation("io.github.astrapi69:swing-components:$swingComponentsVersion")
+    testImplementation("io.github.astrapi69:silk-icon-theme:$silkIconThemeVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
 }
