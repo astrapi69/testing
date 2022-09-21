@@ -1,23 +1,20 @@
 package io.github.astrapi69.testing;
 
-import io.github.astrapi69.icon.ImageIconFactory;
 import io.github.astrapi69.swing.robot.MouseExtensions;
 import io.github.astrapi69.swing.robot.RobotExtensions;
 
+import javax.swing.ImageIcon;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 
 public class StartMouseTrayApp {
 	static InterruptableThread currentExecutionThread;
 
+	static SettingsModelBean settingsModelBean = SettingsModelBean.builder().build();
+
 	static Robot robot;
-
-	static int xVariable = 1;
-
-	static int yVariable = 1;
-
-	static int intervalMilliseconds = 1000;
 
 	static Robot getRobot() {
 		if(robot == null) {
@@ -57,8 +54,7 @@ public class StartMouseTrayApp {
 		} else {
 			final PopupMenu popup = new PopupMenu();
 			final TrayIcon trayIcon =
-					new TrayIcon(ImageIconFactory
-							.newImageIcon("io/github/astrapi69/silk/icons/anchor.png").getImage());
+					new TrayIcon(createImage("io/github/astrapi69/silk/icons/anchor.png", "Keep moving"));
 			final SystemTray tray = SystemTray.getSystemTray();
 
 			// Create a pop-up menu components
@@ -107,9 +103,9 @@ public class StartMouseTrayApp {
 									RobotExtensions
 											.infiniteMoveMouse(
 													getRobot(),
-													MouseExtensions.getMousePosition().x + xVariable,
-													MouseExtensions.getMousePosition().y + yVariable,
-													intervalMilliseconds);
+													MouseExtensions.getMousePosition().x + settingsModelBean.getXAxis(),
+													MouseExtensions.getMousePosition().y + settingsModelBean.getYAxis(),
+													settingsModelBean.getIntervalOfSeconds());
 								} catch (InterruptedException ex) {
 									throw new RuntimeException(ex);
 								}
@@ -136,6 +132,17 @@ public class StartMouseTrayApp {
 			} catch (AWTException e) {
 				System.out.println("TrayIcon could not be added.");
 			}
+		}
+	}
+	//Obtain the image URL
+	protected static Image createImage(String path, String description) {
+		URL imageURL = StartMouseTrayApp.class.getResource(path);
+
+		if (imageURL == null) {
+			System.err.println("Resource not found: " + path);
+			return null;
+		} else {
+			return (new ImageIcon(imageURL, description)).getImage();
 		}
 	}
 
