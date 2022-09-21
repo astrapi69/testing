@@ -1,10 +1,11 @@
 package io.github.astrapi69.testing;
 
 import io.github.astrapi69.icon.ImageIconFactory;
+import io.github.astrapi69.swing.dialog.JOptionPaneExtensions;
 import io.github.astrapi69.swing.robot.MouseExtensions;
 import io.github.astrapi69.swing.robot.RobotExtensions;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.awt.AWTException;
 import java.awt.Frame;
 import java.awt.Image;
@@ -62,7 +63,9 @@ public class StartMouseTrayApp {
 		} else {
 			final PopupMenu popup = new PopupMenu();
 			ImageIcon trayImageIcon = ImageIconFactory
-					.newImageIcon("io/github/astrapi69/silk/icons/anchor.png", "Keep moving");
+					.newImageIcon("io/github/astrapi69/silk/icons/anchor.png"
+//							, "Keep moving"
+					);
 			Image image = trayImageIcon.getImage();
 			final TrayIcon trayIcon = new TrayIcon(image);
 			final SystemTray tray = SystemTray.getSystemTray();
@@ -83,7 +86,15 @@ public class StartMouseTrayApp {
 
 			aboutItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// TODO show dialog
+					MouseMoveSettingsPanel panel = new MouseMoveSettingsPanel();
+					JOptionPane pane = new JOptionPane(panel, JOptionPane.INFORMATION_MESSAGE,
+							JOptionPane.OK_CANCEL_OPTION);
+					int option = JOptionPaneExtensions.getInfoDialogWithOkCancelButton(panel, "Settings",
+							panel.getCmbVariableX());
+					if (option == JOptionPane.OK_OPTION)
+					{
+						settingsModelBean = panel.getModelObject();
+					}
 				}
 			});
 			stopItem.setEnabled(currentExecutionThread != null && !currentExecutionThread.isInterrupted());
@@ -115,7 +126,7 @@ public class StartMouseTrayApp {
 													getRobot(),
 													MouseExtensions.getMousePosition().x + settingsModelBean.getXAxis(),
 													MouseExtensions.getMousePosition().y + settingsModelBean.getYAxis(),
-													settingsModelBean.getIntervalOfSeconds());
+													settingsModelBean.getIntervalOfSeconds() * 1000);
 								} catch (InterruptedException ex) {
 									throw new RuntimeException(ex);
 								}

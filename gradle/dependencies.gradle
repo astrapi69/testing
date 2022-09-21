@@ -1,8 +1,16 @@
 
 dependencies {
-    testImplementation("io.github.astrapi69:icon-img-extensions:$iconImgExtensionsVersion")
+
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
     testImplementation("io.github.astrapi69:swing-components:$swingComponentsVersion")
+    testImplementation("org.swinglabs.swingx:swingx-all:$swingxAllVersion")
+    testImplementation("io.github.astrapi69:swing-base-components:$swingBaseComponentsVersion")
     testImplementation("io.github.astrapi69:silk-icon-theme:$silkIconThemeVersion")
+    testImplementation("io.github.astrapi69:menu-actions:$menuActionsVersion")
+    testImplementation("io.github.astrapi69:model-data:$modelDataVersion")
+    testImplementation("io.github.astrapi69:icon-img-extensions:$iconImgExtensionsVersion")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
 }
