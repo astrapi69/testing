@@ -1,15 +1,24 @@
 package io.github.astrapi69.testing;
 
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.Robot;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import io.github.astrapi69.icon.ImageIconFactory;
 import io.github.astrapi69.model.BaseModel;
 import io.github.astrapi69.swing.dialog.JOptionPaneExtensions;
 import io.github.astrapi69.swing.robot.MouseExtensions;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URL;
 
 public class StartMouseTrayApp {
 	static InterruptableThread currentExecutionThread;
@@ -50,6 +59,7 @@ public class StartMouseTrayApp {
 	}
 
 	static void initializeComponents() {
+
 		//Check the SystemTray is supported
 		if (!SystemTray.isSupported()) {
 			System.out.println("SystemTray is not supported");
