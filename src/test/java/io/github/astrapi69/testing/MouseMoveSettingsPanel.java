@@ -5,11 +5,14 @@
 package io.github.astrapi69.testing;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 
+import io.github.astrapi69.model.LambdaModel;
 import lombok.Getter;
 import io.github.astrapi69.collection.array.ArrayFactory;
 import io.github.astrapi69.model.BaseModel;
@@ -54,7 +57,6 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
         cmbVariableY = new JMComboBox<>(
                 new GenericComboBoxModel<>(ArrayFactory.newArray(1, 2, 3, 4)));
         txtIntervalOfSeconds = new JMTextField();
-        SettingsModelBean modelObject = getModelObject();
         txtIntervalOfSeconds.setDocument(new NumberValuesDocument());
 
         lblVariableX.setText("Move mouse on X axis in pixel");
@@ -76,20 +78,29 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
         txtIntervalOfSeconds.setText("60");
         txtIntervalOfSeconds.setName("txtIntervalOfSeconds");
         txtIntervalOfSeconds.addActionListener(this::onChangeTxtIntervalOfSeconds);
+        txtIntervalOfSeconds.addFocusListener(new FocusAdapter() {
+            @Override public void focusLost(FocusEvent event) {
+                JMTextField source = (JMTextField)event.getSource();
+                final String text = source.getText();
+                getModelObject().setIntervalOfSeconds(Integer.valueOf(text));
+            }
+        });
     }
 
     protected void onChangeCmbVariableY(final ActionEvent actionEvent)
     {
         JMComboBox<GenericComboBoxModel<Integer>> source = (JMComboBox<GenericComboBoxModel<Integer>>)actionEvent
                 .getSource();
-        getModelObject().setYAxis(source.getPropertyModel().getObject().getSelectedItem());
+        final Object selectedItem = source.getModel().getSelectedItem();
+        getModelObject().setYAxis(Integer.valueOf(selectedItem.toString()));
     }
 
     protected void onChangeCmbVariableX(final ActionEvent actionEvent)
     {
         JMComboBox<GenericComboBoxModel<Integer>> source = (JMComboBox<GenericComboBoxModel<Integer>>)actionEvent
                 .getSource();
-        getModelObject().setXAxis(source.getPropertyModel().getObject().getSelectedItem());
+        final Object selectedItem = source.getModel().getSelectedItem();
+        getModelObject().setXAxis(Integer.valueOf(selectedItem.toString()));
     }
 
     protected void onChangeTxtIntervalOfSeconds(final ActionEvent actionEvent)

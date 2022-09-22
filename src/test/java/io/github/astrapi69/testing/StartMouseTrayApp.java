@@ -1,19 +1,12 @@
 package io.github.astrapi69.testing;
 
 import io.github.astrapi69.icon.ImageIconFactory;
+import io.github.astrapi69.model.BaseModel;
 import io.github.astrapi69.swing.dialog.JOptionPaneExtensions;
 import io.github.astrapi69.swing.robot.MouseExtensions;
-import io.github.astrapi69.swing.robot.RobotExtensions;
 
 import javax.swing.*;
-import java.awt.AWTException;
-import java.awt.Frame;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.Robot;
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -22,11 +15,11 @@ public class StartMouseTrayApp {
 	static InterruptableThread currentExecutionThread;
 
 	static SettingsModelBean settingsModelBean = SettingsModelBean.builder().build();
-
+	static MouseMoveSettingsPanel panel = new MouseMoveSettingsPanel(BaseModel.of(settingsModelBean));
 	static Robot robot;
 
 	static Robot getRobot() {
-		if(robot == null) {
+		if (robot == null) {
 			try {
 				robot = new Robot();
 			} catch (AWTException e) {
@@ -39,17 +32,16 @@ public class StartMouseTrayApp {
 	/**
 	 * Start the Application
 	 *
-	 * @param args
-	 *            the arguments
+	 * @param args the arguments
 	 */
-	public static void main(final String[] args)
-	{
+	public static void main(final String[] args) {
 		final JFrame frame = new JFrame("MouseTrayApp");
 		initializeComponents();
 		frame.setExtendedState(JFrame.ICONIFIED);
 		frame.pack();
 		frame.setVisible(true);
 	}
+
 	static SystemTray newSystemTray(final TrayIcon trayIcon, final PopupMenu popup) throws AWTException {
 		final SystemTray systemTray = SystemTray.getSystemTray();
 		trayIcon.setPopupMenu(popup);
@@ -63,10 +55,9 @@ public class StartMouseTrayApp {
 			System.out.println("SystemTray is not supported");
 		} else {
 			final PopupMenu popup = new PopupMenu();
-			ImageIcon trayImageIcon = ImageIconFactory
-					.newImageIcon("io/github/astrapi69/silk/icons/anchor.png"
-//							, "Keep moving"
-					);
+			ImageIcon trayImageIcon = ImageIconFactory.newImageIcon("io/github/astrapi69/silk/icons/anchor.png"
+					//							, "Keep moving"
+			);
 			Image image = trayImageIcon.getImage();
 			final TrayIcon trayIcon = new TrayIcon(image);
 			final SystemTray tray = SystemTray.getSystemTray();
@@ -87,57 +78,32 @@ public class StartMouseTrayApp {
 
 			aboutItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					MouseMoveSettingsPanel panel = new MouseMoveSettingsPanel();
-					JOptionPane pane = new JOptionPane(panel, JOptionPane.INFORMATION_MESSAGE,
-							JOptionPane.OK_CANCEL_OPTION);
-					int option = JOptionPaneExtensions.getInfoDialogWithOkCancelButton(panel, "Settings",
-							panel.getCmbVariableX());
-					if (option == JOptionPane.OK_OPTION)
-					{
+					int option = JOptionPaneExtensions.getInfoDialogWithOkCancelButton(panel, "Settings", panel.getCmbVariableX());
+					if (option == JOptionPane.OK_OPTION) {
+						final String text = panel.getTxtIntervalOfSeconds().getText();
+						if (text != null) {
+							settingsModelBean.setIntervalOfSeconds(Integer.valueOf(text));
+						}
 						settingsModelBean = panel.getModelObject();
+						if (currentExecutionThread != null && currentExecutionThread.isAlive()) {
+							stopMoving(stopItem, startItem);
+							startMoving(stopItem, startItem);
+						}
 					}
 				}
 			});
 			stopItem.setEnabled(currentExecutionThread != null && !currentExecutionThread.isInterrupted());
 			stopItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if(currentExecutionThread != null) {
-						currentExecutionThread.setPriority(Thread.MIN_PRIORITY);
-						currentExecutionThread.interrupt();
-						while (!currentExecutionThread.isInterrupted()) {
-							currentExecutionThread.interrupt();
-						}
-						stopItem.setEnabled(false);
-						startItem.setEnabled(true);
-					}
+					stopMoving(stopItem, startItem);
 				}
 			});
 
 			startItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if(currentExecutionThread != null) {
-						currentExecutionThread.interrupt();
-					}
-					currentExecutionThread = new InterruptableThread() {
-						@Override protected void process() {
-							if(!isInterrupted()) {
-								try {
-									RobotExtensions
-											.infiniteMoveMouse(
-													getRobot(),
-													MouseExtensions.getMousePosition().x + settingsModelBean.getXAxis(),
-													MouseExtensions.getMousePosition().y + settingsModelBean.getYAxis(),
-													settingsModelBean.getIntervalOfSeconds() * 1000);
-								} catch (InterruptedException ex) {
-									throw new RuntimeException(ex);
-								}
-							}
-						}
-					};
-					currentExecutionThread.start();
-					stopItem.setEnabled(true);
-					startItem.setEnabled(false);
+					startMoving(stopItem, startItem);
 				}
+
 			});
 			//Add components to pop-up menu
 			popup.add(aboutItem);
@@ -154,6 +120,41 @@ public class StartMouseTrayApp {
 			}
 		}
 	}
+
+	private static void startMoving(MenuItem stopItem, MenuItem startItem) {
+		if (currentExecutionThread != null) {
+			currentExecutionThread.interrupt();
+		}
+		currentExecutionThread = new InterruptableThread() {
+			@Override protected void process() {
+				while (!isInterrupted()) {
+					try {
+						MouseExtensions.setMousePosition(getRobot(), MouseExtensions.getMousePosition().x + settingsModelBean.getXAxis(),
+								MouseExtensions.getMousePosition().y + settingsModelBean.getYAxis());
+						Thread.sleep(settingsModelBean.getIntervalOfSeconds() * 1000);
+					} catch (InterruptedException ex) {
+						throw new RuntimeException(ex);
+					}
+				}
+			}
+		};
+		currentExecutionThread.start();
+		stopItem.setEnabled(true);
+		startItem.setEnabled(false);
+	}
+
+	private static void stopMoving(MenuItem stopItem, MenuItem startItem) {
+		if (currentExecutionThread != null) {
+			currentExecutionThread.setPriority(Thread.MIN_PRIORITY);
+			currentExecutionThread.interrupt();
+			while (!currentExecutionThread.isInterrupted()) {
+				currentExecutionThread.interrupt();
+			}
+			stopItem.setEnabled(false);
+			startItem.setEnabled(true);
+		}
+	}
+
 	//Obtain the image URL
 	protected static Image createImage(String path, String description) {
 		URL imageURL = StartMouseTrayApp.class.getResource(path);
