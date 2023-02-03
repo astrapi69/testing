@@ -25,8 +25,8 @@ import io.github.astrapi69.swing.document.NumberValuesDocument;
 @Getter
 public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 {
-	private JMComboBox<GenericComboBoxModel<Integer>> cmbVariableX;
-	private JMComboBox<GenericComboBoxModel<Integer>> cmbVariableY;
+	private JMComboBox<Integer, GenericComboBoxModel<Integer>> cmbVariableX;
+	private JMComboBox<Integer, GenericComboBoxModel<Integer>> cmbVariableY;
 	private JLabel lblIntervalOfSeconds;
 	private JLabel lblSettings;
 	private JLabel lblVariableX;
@@ -90,7 +90,8 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 
 	protected void onChangeCmbVariableY(final ActionEvent actionEvent)
 	{
-		JMComboBox<GenericComboBoxModel<Integer>> source = (JMComboBox<GenericComboBoxModel<Integer>>)actionEvent
+		JMComboBox<Integer, GenericComboBoxModel<Integer>> source =
+			(JMComboBox<Integer, GenericComboBoxModel<Integer>>)actionEvent
 			.getSource();
 		final Object selectedItem = source.getModel().getSelectedItem();
 		getModelObject().setYAxis(Integer.valueOf(selectedItem.toString()));
@@ -98,7 +99,8 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 
 	protected void onChangeCmbVariableX(final ActionEvent actionEvent)
 	{
-		JMComboBox<GenericComboBoxModel<Integer>> source = (JMComboBox<GenericComboBoxModel<Integer>>)actionEvent
+		JMComboBox<Integer, GenericComboBoxModel<Integer>> source =
+			(JMComboBox<Integer, GenericComboBoxModel<Integer>>)actionEvent
 			.getSource();
 		final Object selectedItem = source.getModel().getSelectedItem();
 		getModelObject().setXAxis(Integer.valueOf(selectedItem.toString()));
