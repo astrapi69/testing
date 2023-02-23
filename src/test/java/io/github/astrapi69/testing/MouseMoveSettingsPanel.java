@@ -32,6 +32,7 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 	private JLabel lblVariableX;
 	private JLabel lblVariableY;
 	private JMTextField txtIntervalOfSeconds;
+	private JMTextField txtIntervalOfMouseMovementsCheckInSeconds;
 
 	public MouseMoveSettingsPanel()
 	{
@@ -57,6 +58,8 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 			new GenericComboBoxModel<>(ArrayFactory.newArray(1, 2, 3, 4)));
 		txtIntervalOfSeconds = new JMTextField();
 		txtIntervalOfSeconds.setDocument(new NumberValuesDocument());
+		txtIntervalOfMouseMovementsCheckInSeconds = new JMTextField();
+		txtIntervalOfMouseMovementsCheckInSeconds.setDocument(new NumberValuesDocument());
 
 		lblVariableX.setText("Move mouse on X axis in pixel");
 
@@ -113,50 +116,55 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 		getModelObject().setIntervalOfSeconds(Integer.valueOf(propertyModel.getObject()));
 	}
 
-	@Override
-	protected void onInitializeLayout()
-	{
+
+	protected void onInitializeGroupLayout(){
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-			.addGroup(layout.createSequentialGroup().addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-					.addGroup(layout.createSequentialGroup()
-						.addComponent(lblVariableX, GroupLayout.PREFERRED_SIZE, 250,
-							GroupLayout.PREFERRED_SIZE)
-						.addGap(18, 18, 18).addComponent(cmbVariableX, GroupLayout.PREFERRED_SIZE,
-							GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGroup(layout.createSequentialGroup()
-						.addComponent(lblIntervalOfSeconds, GroupLayout.PREFERRED_SIZE, 250,
-							GroupLayout.PREFERRED_SIZE)
-						.addGap(18, 18, 18).addComponent(txtIntervalOfSeconds))
-					.addGroup(layout.createSequentialGroup()
-						.addComponent(lblVariableY, GroupLayout.PREFERRED_SIZE, 250,
-							GroupLayout.PREFERRED_SIZE)
-						.addGap(18, 18, 18).addComponent(cmbVariableY, GroupLayout.PREFERRED_SIZE,
-							GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addComponent(lblSettings, GroupLayout.PREFERRED_SIZE, 250,
-						GroupLayout.PREFERRED_SIZE))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addGroup(layout.createSequentialGroup().addContainerGap()
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(lblVariableX, GroupLayout.PREFERRED_SIZE, 250,
+												GroupLayout.PREFERRED_SIZE)
+										.addGap(18, 18, 18).addComponent(cmbVariableX, GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(lblIntervalOfSeconds, GroupLayout.PREFERRED_SIZE, 250,
+												GroupLayout.PREFERRED_SIZE)
+										.addGap(18, 18, 18).addComponent(txtIntervalOfSeconds))
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(lblVariableY, GroupLayout.PREFERRED_SIZE, 250,
+												GroupLayout.PREFERRED_SIZE)
+										.addGap(18, 18, 18).addComponent(cmbVariableY, GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(lblSettings, GroupLayout.PREFERRED_SIZE, 250,
+										GroupLayout.PREFERRED_SIZE))
+						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		layout
-			.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addContainerGap().addComponent(lblSettings)
-					.addGap(18, 18, 18)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(lblVariableX)
-						.addComponent(cmbVariableX, GroupLayout.PREFERRED_SIZE,
-							GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(18, 18, 18)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(lblVariableY)
-						.addComponent(cmbVariableY, GroupLayout.PREFERRED_SIZE,
-							GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(18, 18, 18)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(lblIntervalOfSeconds).addComponent(txtIntervalOfSeconds,
-							GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-							GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(21, Short.MAX_VALUE)));
+				.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addGroup(layout.createSequentialGroup().addContainerGap().addComponent(lblSettings)
+								.addGap(18, 18, 18)
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+										.addComponent(lblVariableX)
+										.addComponent(cmbVariableX, GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addGap(18, 18, 18)
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+										.addComponent(lblVariableY)
+										.addComponent(cmbVariableY, GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addGap(18, 18, 18)
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+										.addComponent(lblIntervalOfSeconds).addComponent(txtIntervalOfSeconds,
+												GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE))
+								.addContainerGap(21, Short.MAX_VALUE)));
+	}
+
+	@Override
+	protected void onInitializeLayout()
+	{
+		this.onInitializeGroupLayout();
 	}
 
 }
