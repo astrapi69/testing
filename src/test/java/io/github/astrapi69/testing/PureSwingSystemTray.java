@@ -77,21 +77,17 @@ public class PureSwingSystemTray
 		MenuItem exitItem = new MenuItem("Exit");
 		MenuItem aboutItem = new MenuItem("About");
 
-		exitItem.setCallback(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
+		exitItem.setCallback(e ->
 			{
 				systemTray.shutdown();
 				System.exit(0);
 			}
-		});
+		);
 
-		aboutItem.setCallback(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
+		aboutItem.setCallback(e ->
 			{
 				int option = JOptionPaneExtensions.getInfoDialogWithOkCancelButton(panel,
-					"Settings", panel.getCmbVariableX());
+						"Settings", panel.getCmbVariableX());
 				if (option == JOptionPane.OK_OPTION)
 				{
 					final String text = panel.getTxtIntervalOfSeconds().getText();
@@ -107,27 +103,23 @@ public class PureSwingSystemTray
 					}
 				}
 			}
-		});
+		);
+
 		stopItem
 			.setEnabled(currentExecutionThread != null && !currentExecutionThread.isInterrupted());
-		stopItem.setCallback(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
+		stopItem.setCallback(e ->
 			{
 				stopMoving(stopItem, startItem);
 				systemTray.setStatus("Stopped Moving");
 			}
-		});
+		);
 
-		startItem.setCallback(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
+		startItem.setCallback(e ->
 			{
 				startMoving(stopItem, startItem);
 				systemTray.setStatus("Moving around");
 			}
-
-		});
+		);
 		// Add components to pop-up menu
 		systemTray.getMenu().add(aboutItem).setShortcut('q');
 		systemTray.getMenu().add(new Separator());
@@ -177,17 +169,27 @@ public class PureSwingSystemTray
 					try
 					{
 						final Map.Entry<LocalDateTime, Point> lastTrackedMousePointEntry = mouseTracks.lastEntry();
-						final Point lastTrackedMousePoint = lastTrackedMousePointEntry.getValue();
 						final Point currentMousePosition = MouseExtensions.getMousePosition();
-						// mouse not moved
-						if(lastTrackedMousePoint.equals(currentMousePosition)) {
+						if(lastTrackedMousePointEntry != null) {
+							final Point lastTrackedMousePoint = lastTrackedMousePointEntry.getValue();
+							// mouse not moved
+							if(lastTrackedMousePoint.equals(currentMousePosition)) {
+								MouseExtensions.setMousePosition(getRobot(),
+										currentMousePosition.x + settingsModelBean.getXAxis(),
+										currentMousePosition.y + settingsModelBean.getYAxis());
+								Thread.sleep(settingsModelBean.getIntervalOfSeconds() * 1000);
+							} else {
+								int diff = settingsModelBean.getIntervalOfSeconds()
+										- settingsModelBean.getIntervalOfMouseMovementsCheckInSeconds();
+								Thread.sleep(diff);
+							}
+						} else {
 							MouseExtensions.setMousePosition(getRobot(),
 									currentMousePosition.x + settingsModelBean.getXAxis(),
 									currentMousePosition.y + settingsModelBean.getYAxis());
 							Thread.sleep(settingsModelBean.getIntervalOfSeconds() * 1000);
-						} else {
-
 						}
+
 					}
 					catch (InterruptedException ex)
 					{
