@@ -1,14 +1,14 @@
 package io.github.astrapi69.testing;
 
-import java.awt.AWTException;
-import java.awt.Image;
-import java.awt.Robot;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import dorkbox.systemTray.MenuItem;
 import dorkbox.systemTray.Separator;
@@ -22,6 +22,9 @@ public class PureSwingSystemTray
 {
 
 	static InterruptableThread currentExecutionThread;
+	static InterruptableThread mouseTrackThread;
+
+	static NavigableMap<LocalDateTime, Point> mouseTracks = new TreeMap<>();
 
 	static SettingsModelBean settingsModelBean = SettingsModelBean.builder().build();
 	static MouseMoveSettingsPanel panel = new MouseMoveSettingsPanel(
@@ -140,6 +143,30 @@ public class PureSwingSystemTray
 		{
 			currentExecutionThread.interrupt();
 		}
+		if (mouseTrackThread != null)
+		{
+			mouseTrackThread.interrupt();
+		}
+		mouseTrackThread = new InterruptableThread()
+		{
+			@Override
+			protected void process()
+			{
+				while (!isInterrupted())
+				{
+					try
+					{
+						mouseTracks.put(LocalDateTime.now(), MouseExtensions.getMousePosition());
+						Thread.sleep(
+							settingsModelBean.getIntervalOfMouseMovementsCheckInSeconds() * 1000);
+					}
+					catch (InterruptedException ex)
+					{
+						throw new RuntimeException(ex);
+					}
+				}
+			}
+		};
 		currentExecutionThread = new InterruptableThread()
 		{
 			@Override
@@ -149,10 +176,18 @@ public class PureSwingSystemTray
 				{
 					try
 					{
-						MouseExtensions.setMousePosition(getRobot(),
-							MouseExtensions.getMousePosition().x + settingsModelBean.getXAxis(),
-							MouseExtensions.getMousePosition().y + settingsModelBean.getYAxis());
-						Thread.sleep(settingsModelBean.getIntervalOfSeconds() * 1000);
+						final Map.Entry<LocalDateTime, Point> lastTrackedMousePointEntry = mouseTracks.lastEntry();
+						final Point lastTrackedMousePoint = lastTrackedMousePointEntry.getValue();
+						final Point currentMousePosition = MouseExtensions.getMousePosition();
+						// mouse not moved
+						if(lastTrackedMousePoint.equals(currentMousePosition)) {
+							MouseExtensions.setMousePosition(getRobot(),
+									currentMousePosition.x + settingsModelBean.getXAxis(),
+									currentMousePosition.y + settingsModelBean.getYAxis());
+							Thread.sleep(settingsModelBean.getIntervalOfSeconds() * 1000);
+						} else {
+
+						}
 					}
 					catch (InterruptedException ex)
 					{
@@ -161,7 +196,10 @@ public class PureSwingSystemTray
 				}
 			}
 		};
+		mouseTrackThread.start();
+		mouseTrackThread.setPriority(Thread.MIN_PRIORITY);
 		currentExecutionThread.start();
+		currentExecutionThread.setPriority(Thread.MIN_PRIORITY);
 		stopItem.setEnabled(true);
 		startItem.setEnabled(false);
 	}
@@ -178,6 +216,16 @@ public class PureSwingSystemTray
 			}
 			stopItem.setEnabled(false);
 			startItem.setEnabled(true);
+		}
+
+		if (mouseTrackThread != null)
+		{
+			mouseTrackThread.setPriority(Thread.MIN_PRIORITY);
+			mouseTrackThread.interrupt();
+			while (!mouseTrackThread.isInterrupted())
+			{
+				mouseTrackThread.interrupt();
+			}
 		}
 	}
 }

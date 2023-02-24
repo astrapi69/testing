@@ -7,9 +7,9 @@ package io.github.astrapi69.testing;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.Optional;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 
 import lombok.Getter;
@@ -21,6 +21,8 @@ import io.github.astrapi69.swing.combobox.model.GenericComboBoxModel;
 import io.github.astrapi69.swing.component.JMComboBox;
 import io.github.astrapi69.swing.component.JMTextField;
 import io.github.astrapi69.swing.document.NumberValuesDocument;
+import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
@@ -28,6 +30,7 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 	private JMComboBox<Integer, GenericComboBoxModel<Integer>> cmbVariableX;
 	private JMComboBox<Integer, GenericComboBoxModel<Integer>> cmbVariableY;
 	private JLabel lblIntervalOfSeconds;
+	private JLabel lblIntervalOfMouseMovementsCheckInSeconds;
 	private JLabel lblSettings;
 	private JLabel lblVariableX;
 	private JLabel lblVariableY;
@@ -47,10 +50,11 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 	@Override
 	protected void onInitializeComponents()
 	{
-		lblVariableX = new JLabel();
 		lblSettings = new JLabel();
+		lblVariableX = new JLabel();
 		lblVariableY = new JLabel();
 		lblIntervalOfSeconds = new JLabel();
+		lblIntervalOfMouseMovementsCheckInSeconds = new JLabel();
 		Integer[] cmbArray = ArrayFactory.newArray(1, 2, 3, 4);
 		cmbVariableX = new JMComboBox<>(
 			new GenericComboBoxModel<>(ArrayFactory.newArray(1, 2, 3, 4)));
@@ -68,6 +72,7 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 		lblVariableY.setText("Move mouse on Y axis in pixel");
 
 		lblIntervalOfSeconds.setText("Move mouse every time (in seconds)");
+		lblIntervalOfMouseMovementsCheckInSeconds.setText("Check mouse movement every time (in seconds)");
 
 		cmbVariableX.setModel(new DefaultComboBoxModel<>(new Integer[] { 1, 2, 3, 4 }));
 		cmbVariableX.setName("cmbVariableX");
@@ -76,7 +81,7 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 		cmbVariableY.setName("cmbVariableY");
 		cmbVariableY.addActionListener(this::onChangeCmbVariableY);
 
-		txtIntervalOfSeconds.setText("60");
+		txtIntervalOfSeconds.setText(getModelObject().getIntervalOfSeconds() != null ? getModelObject().getIntervalOfSeconds().toString(): "60");
 		txtIntervalOfSeconds.setName("txtIntervalOfSeconds");
 		txtIntervalOfSeconds.addActionListener(this::onChangeTxtIntervalOfSeconds);
 		txtIntervalOfSeconds.addFocusListener(new FocusAdapter()
@@ -87,6 +92,21 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 				JMTextField source = (JMTextField)event.getSource();
 				final String text = source.getText();
 				getModelObject().setIntervalOfSeconds(Integer.valueOf(text));
+			}
+		});
+
+		txtIntervalOfMouseMovementsCheckInSeconds.setText(getModelObject().getIntervalOfMouseMovementsCheckInSeconds() != null ?
+				getModelObject().getIntervalOfMouseMovementsCheckInSeconds().toString(): "30");
+		txtIntervalOfMouseMovementsCheckInSeconds.setName("txtIntervalOfMouseMovementsCheckInSeconds");
+		txtIntervalOfMouseMovementsCheckInSeconds.addActionListener(this::onChangeTxtIntervalOfMouseMovementsCheckInSeconds);
+		txtIntervalOfMouseMovementsCheckInSeconds.addFocusListener(new FocusAdapter()
+		{
+			@Override
+			public void focusLost(FocusEvent event)
+			{
+				JMTextField source = (JMTextField)event.getSource();
+				final String text = source.getText();
+				getModelObject().setIntervalOfMouseMovementsCheckInSeconds(Integer.valueOf(text));
 			}
 		});
 	}
@@ -111,60 +131,47 @@ public class MouseMoveSettingsPanel extends BasePanel<SettingsModelBean>
 
 	protected void onChangeTxtIntervalOfSeconds(final ActionEvent actionEvent)
 	{
-		JMTextField source = (JMTextField)actionEvent.getSource();
-		IModel<String> propertyModel = source.getPropertyModel();
-		getModelObject().setIntervalOfSeconds(Integer.valueOf(propertyModel.getObject()));
+		getJMTextFieldModel(actionEvent).ifPresent(propertyModel ->
+				getModelObject().setIntervalOfSeconds(Integer.valueOf(propertyModel.getObject())));
 	}
 
+	@NotNull private static Optional<IModel<String>> getJMTextFieldModel(ActionEvent actionEvent) {
+		if(actionEvent.getSource() instanceof JMTextField ) {
+			JMTextField source = (JMTextField) actionEvent.getSource();
+			IModel<String> propertyModel = source.getPropertyModel();
+			return Optional.of(propertyModel);
+		}
+		return Optional.empty();
+	}
 
-	protected void onInitializeGroupLayout(){
-		GroupLayout layout = new GroupLayout(this);
-		this.setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addContainerGap()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-								.addGroup(layout.createSequentialGroup()
-										.addComponent(lblVariableX, GroupLayout.PREFERRED_SIZE, 250,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(18, 18, 18).addComponent(cmbVariableX, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addGroup(layout.createSequentialGroup()
-										.addComponent(lblIntervalOfSeconds, GroupLayout.PREFERRED_SIZE, 250,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(18, 18, 18).addComponent(txtIntervalOfSeconds))
-								.addGroup(layout.createSequentialGroup()
-										.addComponent(lblVariableY, GroupLayout.PREFERRED_SIZE, 250,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(18, 18, 18).addComponent(cmbVariableY, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addComponent(lblSettings, GroupLayout.PREFERRED_SIZE, 250,
-										GroupLayout.PREFERRED_SIZE))
-						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-		layout
-				.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(layout.createSequentialGroup().addContainerGap().addComponent(lblSettings)
-								.addGap(18, 18, 18)
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(lblVariableX)
-										.addComponent(cmbVariableX, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addGap(18, 18, 18)
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(lblVariableY)
-										.addComponent(cmbVariableY, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addGap(18, 18, 18)
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(lblIntervalOfSeconds).addComponent(txtIntervalOfSeconds,
-												GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE))
-								.addContainerGap(21, Short.MAX_VALUE)));
+	protected void onChangeTxtIntervalOfMouseMovementsCheckInSeconds(final ActionEvent actionEvent)
+	{
+		getJMTextFieldModel(actionEvent).ifPresent(propertyModel ->
+				getModelObject().setIntervalOfMouseMovementsCheckInSeconds(Integer.valueOf(propertyModel.getObject())));
 	}
 
 	@Override
 	protected void onInitializeLayout()
 	{
-		this.onInitializeGroupLayout();
+		this.onInitializeMigLayout();
+	}
+
+	protected void onInitializeMigLayout() {
+		final MigLayout layout = new MigLayout();
+		this.setLayout(layout);
+		this.add(lblSettings, "wrap");
+
+		this.add(lblVariableX);
+		this.add(cmbVariableX, "wrap");
+
+		this.add(lblVariableY);
+		this.add(cmbVariableY, "wrap");
+
+		this.add(lblIntervalOfSeconds);
+		this.add(txtIntervalOfSeconds, "wrap");
+
+		this.add(lblIntervalOfMouseMovementsCheckInSeconds);
+		this.add(txtIntervalOfMouseMovementsCheckInSeconds, "wrap");
 	}
 
 }
