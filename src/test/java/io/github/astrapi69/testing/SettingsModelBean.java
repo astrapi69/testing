@@ -171,14 +171,14 @@ public class SettingsModelBean
 
 	public static abstract class SettingsModelBeanBuilder<C extends SettingsModelBean, B extends SettingsModelBeanBuilder<C, B>>
 	{
-		private Integer xAxis$value;
-		private boolean xAxis$set;
-		private Integer yAxis$value;
-		private boolean yAxis$set;
-		private Integer intervalOfSeconds$value;
-		private boolean intervalOfSeconds$set;
-		private Integer intervalOfMouseMovementsCheckInSeconds$value;
-		private boolean intervalOfMouseMovementsCheckInSeconds$set;
+		Integer xAxis$value;
+		boolean xAxis$set;
+		Integer yAxis$value;
+		boolean yAxis$set;
+		Integer intervalOfSeconds$value;
+		boolean intervalOfSeconds$set;
+		Integer intervalOfMouseMovementsCheckInSeconds$value;
+		boolean intervalOfMouseMovementsCheckInSeconds$set;
 
 		private static void $fillValuesFromInstanceIntoBuilder(SettingsModelBean instance,
 				SettingsModelBeanBuilder<?, ?> b)
