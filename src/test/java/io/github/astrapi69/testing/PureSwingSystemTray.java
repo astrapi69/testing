@@ -25,8 +25,12 @@ public class PureSwingSystemTray
 	static InterruptableThread mouseTrackThread;
 
 	static NavigableMap<LocalDateTime, Point> mouseTracks = new TreeMap<>();
-
-	static SettingsModelBean settingsModelBean = SettingsModelBean.builder().build();
+	static SettingsModelBean settingsModelBean = SettingsModelBean.builder()
+			.intervalOfSeconds(180)
+			.intervalOfMouseMovementsCheckInSeconds(90)
+			.xAxis(1)
+			.yAxis(1)
+			.build();
 	static MouseMoveSettingsPanel panel = new MouseMoveSettingsPanel(
 		BaseModel.of(settingsModelBean));
 	static Robot robot;
