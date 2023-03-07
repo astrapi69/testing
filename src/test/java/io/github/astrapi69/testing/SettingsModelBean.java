@@ -32,6 +32,26 @@ public class SettingsModelBean
 		this.intervalOfMouseMovementsCheckInSeconds = b.intervalOfMouseMovementsCheckInSeconds$value;
 	}
 
+	private static Integer $default$xAxis()
+	{
+		return 1;
+	}
+
+	private static Integer $default$yAxis()
+	{
+		return 1;
+	}
+
+	private static Integer $default$intervalOfSeconds()
+	{
+		return 10;
+	}
+	
+	private static Integer $default$intervalOfMouseMovementsCheckInSeconds()
+	{
+		return 5;
+	}
+	
 	public static SettingsModelBeanBuilder<?, ?> builder()
 	{
 		return new SettingsModelBeanBuilderImpl();
@@ -233,7 +253,24 @@ public class SettingsModelBean
 
 		public SettingsModelBean build()
 		{
-			return new SettingsModelBean(this);
+			if (!this.xAxis$set)
+			{
+				this.xAxis$value = SettingsModelBean.$default$xAxis();
+			}
+			if (!this.yAxis$set)
+			{
+				this.yAxis$value = SettingsModelBean.$default$yAxis();
+			}
+			if (!this.intervalOfSeconds$set)
+			{
+				this.intervalOfSeconds$value = SettingsModelBean.$default$intervalOfSeconds();
+			}
+			if (!this.intervalOfMouseMovementsCheckInSeconds$set)
+			{
+				this.intervalOfMouseMovementsCheckInSeconds$value = SettingsModelBean.$default$intervalOfMouseMovementsCheckInSeconds();
+			}
+			SettingsModelBean settingsModelBean = new SettingsModelBean(this);
+			return settingsModelBean;
 		}
 	}
 }
